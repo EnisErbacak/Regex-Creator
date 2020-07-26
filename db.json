@@ -1,1 +1,1 @@
-{"Starts with":"$","Ends with":"#","Numerical":"[0-9]"}
+{"Starts with":"^","Ends with":"$","Numerical":"[0-9]","Any Character":".","Digit":"\\d","Non-Digit":"\\D","Whitespace":"\\s","Non-Whitespace":"\\S","Word Character":"\\w","Non-Word Character":"\\W"}

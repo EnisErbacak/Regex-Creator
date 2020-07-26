@@ -35,26 +35,53 @@ public class RegexGui {
 	{
 		Converter converter=new Converter();		
 		JComboBox combo=new JComboBox();
+		private Creator creator;
+		private JTextField textField;
 		
 		private int comboIndex;
 		
-		String[] regexModel= {"Starts with","Ends with","Numerical"};
-		DefaultComboBoxModel<String> comboModel=new DefaultComboBoxModel<String>(regexModel);
+		//String[] regexModel= {"Starts with","Ends with","Numerical"};
+		
+		
 		
 		public RegexComboBox(JTextField textField,Creator creator,int comboIndex)
 		{
 			super();
+			this.creator=creator;
+			this.textField=textField;
+			String[] regexModel;
+			if(comboIndex==0)
+			{
+				regexModel=creator.getKeys(0);
+			}
+			else
+			{
+				regexModel=creator.getKeys(1);
+			}
+			System.out.println("ComboIndex:"+comboIndex);
+			DefaultComboBoxModel<String> comboModel=new DefaultComboBoxModel<String>(regexModel);
 			setModel(comboModel);
-			addActionListener(new ActionListener() {
+			creator.changeElement(creator.getElement(getSelectedItem().toString()),comboIndex);
+			textField.setText(creator.getOutput());		
+			
+		
+			addActionListener(new ActionListener() 
+			{
 				public void actionPerformed(ActionEvent arg0) 
 				{
 					
 					creator.changeElement(creator.getElement(getSelectedItem().toString()),comboIndex);
 					textField.setText(creator.getOutput());
 				}
-			});
-		}		
+				
+			}
+			);
+		}
+		
 	}
+	
+		
+	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	private JFrame frame;
@@ -96,6 +123,7 @@ public class RegexGui {
 			e.printStackTrace();
 		}
 		
+		ArrayList<RegexComboBox> comboContainer=new ArrayList<RegexComboBox>();
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1130, 677);
@@ -119,8 +147,11 @@ public class RegexGui {
 		upperPanel.add(upperLowerPanel, "cell 0 1,growx,aligny bottom");
 		upperLowerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JButton addButton = new JButton("ADD");
-		upperLowerPanel.add(addButton);
+		JButton btnAdd = new JButton("ADD");
+		upperLowerPanel.add(btnAdd);
+		
+		JButton btnRemove = new JButton("REMOVE");
+		upperLowerPanel.add(btnRemove);
 		
 		JComboBox comboBox = new JComboBox();
 		comboBox.addActionListener(new ActionListener() {
@@ -140,18 +171,42 @@ public class RegexGui {
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		Creator creator=new Creator(regexOutput);
-		ArrayList<RegexComboBox> comboContainer=new ArrayList<RegexComboBox>();
-		addButton.addMouseListener(new MouseAdapter() 
+		
+		
+		
+		btnAdd.addMouseListener(new MouseAdapter() 
 		{
-			int comboIndex=0;			
+			int comboIndex=0;
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				
 				RegexComboBox newCombo=new RegexComboBox(regexOutput,creator,comboIndex);
 				upperUpperPanel.add(newCombo);
 				comboContainer.add(newCombo);				
 				upperUpperPanel.updateUI();
-				comboIndex++;
-				
+				comboIndex++;	
+			}
+		});
+		
+		btnRemove.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				if(comboContainer.size()!=0)
+				{
+				System.out.println(comboContainer.size());
+				System.out.println(upperUpperPanel.countComponents());
+				upperUpperPanel.remove(comboContainer.size()-1);
+				comboContainer.remove(comboContainer.size()-1);
+				//remove(comboContainer.size());
+				creator.removeElement(creator.getPattern().size()-1);
+				regexOutput.setText(creator.getOutput());
+				upperUpperPanel.updateUI();
+				}
+				else
+				{
+					System.out.println("NO object to remove!");
+				}
 			}
 		});
 	}
