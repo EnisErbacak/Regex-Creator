@@ -28,6 +28,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JTextArea;
 
 public class RegexGui {
 	
@@ -37,6 +38,7 @@ public class RegexGui {
 		JComboBox combo=new JComboBox();
 		private Creator creator;
 		private JTextField textField;
+		private Tester tester=new Tester();
 		
 		private int comboIndex;
 		
@@ -44,11 +46,11 @@ public class RegexGui {
 		
 		
 		
-		public RegexComboBox(JTextField textField,Creator creator,int comboIndex)
+		public RegexComboBox(JTextField regexOutput,Creator creator,int comboIndex,JTextArea test)
 		{
 			super();
 			this.creator=creator;
-			this.textField=textField;
+			this.textField=regexOutput;
 			String[] regexModel;
 			if(comboIndex==0)
 			{
@@ -69,9 +71,10 @@ public class RegexGui {
 			{
 				public void actionPerformed(ActionEvent arg0) 
 				{
-					
+					System.out.println("***************");
 					creator.changeElement(creator.getElement(getSelectedItem().toString()),comboIndex);
 					textField.setText(creator.getOutput());
+					tester.tester(regexOutput.getText(), test);
 				}
 				
 			}
@@ -90,7 +93,8 @@ public class RegexGui {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -126,25 +130,26 @@ public class RegexGui {
 		ArrayList<RegexComboBox> comboContainer=new ArrayList<RegexComboBox>();
 		
 		frame = new JFrame();
-		frame.setBounds(100, 100, 1130, 677);
+		frame.setBounds(100, 100, 650, 677);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel mainPanel = new JPanel();
 		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
-		mainPanel.setLayout(new MigLayout("", "[1000:1000:1000]", "[grow][grow]"));
+		mainPanel.setLayout(new MigLayout("", "[600px:600px,grow,center]", "[][grow]"));
 		
 		JPanel upperPanel = new JPanel();
 		upperPanel.setBackground(Color.GRAY);
 		mainPanel.add(upperPanel, "cell 0 0,grow");
-		upperPanel.setLayout(new MigLayout("", "[1000px:1000:1000px,left]", "[grow][30px:30px:30px]"));
+		upperPanel.setLayout(new MigLayout("", "[600px:600px,grow,fill]", "[240.00][30px:30px:30px]"));
 		
 		JPanel upperUpperPanel = new JPanel();
+		upperUpperPanel.setBackground(Color.YELLOW);
 		upperPanel.add(upperUpperPanel, "flowx,cell 0 0,alignx left,aligny top");
 		upperUpperPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		upperUpperPanel.setLayout(new GridLayout(0, 10, 0, 0));
+		upperUpperPanel.setLayout(new GridLayout(0, 4, 0, 10));
 		
 		JPanel upperLowerPanel = new JPanel();
-		upperPanel.add(upperLowerPanel, "cell 0 1,growx,aligny bottom");
+		upperPanel.add(upperLowerPanel, "cell 0 1,growx,aligny center");
 		upperLowerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton btnAdd = new JButton("ADD");
@@ -163,7 +168,7 @@ public class RegexGui {
 		JPanel lowerPanel = new JPanel();
 		lowerPanel.setBackground(Color.LIGHT_GRAY);
 		mainPanel.add(lowerPanel, "cell 0 1,grow");
-		lowerPanel.setLayout(new MigLayout("", "[grow]", "[][][]"));
+		lowerPanel.setLayout(new MigLayout("", "[grow]", "[][][grow]"));
 		
 		regexOutput = new JTextField();
 		lowerPanel.add(regexOutput, "cell 0 1,growx");
@@ -171,6 +176,10 @@ public class RegexGui {
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		Creator creator=new Creator(regexOutput);
+		
+		JTextArea textAreaTest = new JTextArea();
+		textAreaTest.setText("1234 asdfasdf\r\nabcda 123123\r\n@adfasdf");
+		lowerPanel.add(textAreaTest, "cell 0 2,grow");
 		
 		
 		
@@ -180,7 +189,7 @@ public class RegexGui {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				
-				RegexComboBox newCombo=new RegexComboBox(regexOutput,creator,comboIndex);
+				RegexComboBox newCombo=new RegexComboBox(regexOutput,creator,comboIndex,textAreaTest);
 				upperUpperPanel.add(newCombo);
 				comboContainer.add(newCombo);				
 				upperUpperPanel.updateUI();
